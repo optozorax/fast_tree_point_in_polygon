@@ -19,15 +19,16 @@ namespace ftpip
 	public:
 		~Check() {}
 
-		bool isInside(const spob::vec2& p) = 0;
+		virtual bool isInside(const spob::vec2& p) = 0;
 
-		double getComplexity(void) const;
+		virtual double getComplexity(void) const = 0;
 	protected:
 		struct Compare1
 		{
 			bool less;
 			double value;
 
+			Compare1() : less(false), value(0) {}
 			Compare1(bool less, double value) : less(less), value(value) {}
 
 			bool check(double x) {
@@ -43,6 +44,7 @@ namespace ftpip
 			bool less;
 			double k, b;
 
+			Compare2() : less(false), k(0), b(0) {}
 			Compare2(bool less, double k, double b) : less(less), k(k), b(b) {}
 
 			bool check(double x, double y) {
@@ -51,21 +53,21 @@ namespace ftpip
 				else
 					return y - k*x - b > 0;
 			}
-		}
+		};
 	};
 
 	/** Четырехугольник, стороны которого параллельны осям координат. */
-	class QuadCheck
+	class QuadCheck : public Check
 	{
 	public:
 		spob::vec2 up_left, down_right;
 
 		// В прошлый раз не было проверок на принадлежность некоторому четырехугольнику, либо они были, но произошла трансформация координат, и все эти данные потеряны
-		QuadCheck(const spob::vec2& up_left, spob::vec2& down_right);
+		QuadCheck(const spob::vec2& up_left, const spob::vec2& down_right);
 
 		// Считается, что в прошлый раз уже были проверки на принадлежность некоторому квадрату, и в этот раз проверки будут делаться так, чтоби не учитывать уже имеющуюся информацию 
-		QuadCheck(const spob::vec2& up_left, spob::vec2& down_right, 
-		          const spob::vec2& last_up_left, spob::vec2& last_down_right);
+		QuadCheck(const spob::vec2& up_left, const spob::vec2& down_right, 
+		          const spob::vec2& last_up_left, const spob::vec2& last_down_right);
 
 		~QuadCheck() {}
 
@@ -135,7 +137,7 @@ namespace ftpip
 
 	double calcComplexity(TreeElem_ptr tree);
 
-	void makeTree(TreeElem_ptr tree, const std::vector<vec2>& points);
+	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points);
 
 	bool isInside(TreeElem_ptr tree, const spob::vec2& p);
 };

@@ -55,7 +55,8 @@ inline int getNextIndex(int n, int current) {
 
 //-----------------------------------------------------------------------------
 
-bool isPointInsidePolygon(const std::vector<spob::vec2>& polygon1, const spob::vec2& testPoint) {
+bool isPointInsidePolygon(const std::vector<spob::vec2>& polygon1, const spob::vec2& testPoint1) {
+	auto testPoint = testPoint1;
 	auto polygon = polygon1;
 	int n = polygon.size();
 	Line xAxis;
