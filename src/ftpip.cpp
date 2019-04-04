@@ -30,7 +30,7 @@ QuadCheck::QuadCheck(const spob::vec2& up_left, const spob::vec2& down_right, co
 }
 
 //-----------------------------------------------------------------------------
-bool QuadCheck::isInside(const spob::vec2& p) {
+bool QuadCheck::isInside(const glm::vec3& p) {
 	for (auto& i : x_check) {
 		if (!i.check(p.x))
 			return false;
@@ -80,7 +80,7 @@ HalfQuadCheck::HalfQuadCheck(const spob::vec2& a, const spob::vec2& b, const spo
 }
 
 //-----------------------------------------------------------------------------
-bool HalfQuadCheck::isInside(const spob::vec2& p) {
+bool HalfQuadCheck::isInside(const glm::vec3& p) {
 	if (!QuadCheck::isInside(p))
 		return false;
 
@@ -112,12 +112,12 @@ double calcComplexity(TreeElem_ptr tree) {
 }
 
 //-----------------------------------------------------------------------------
-void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points) {
+void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points, int depth) {
 
 }
 
 //-----------------------------------------------------------------------------
-bool isInside(TreeElem_ptr tree, const spob::vec2& p) {
+bool isInside(TreeElem_ptr tree, const glm::vec3& p) {
 	switch (tree->type) {
 		case TreeElem::TRUE: {
 			return true;
@@ -126,16 +126,14 @@ bool isInside(TreeElem_ptr tree, const spob::vec2& p) {
 			return false;
 		} break;
 		case TreeElem::NEXT: {
-			spob::vec2 newp = p;
-			if (tree->isTransform) {
-				auto newp1 = tree->transform * glm::vec3(spob2glm(p), 1);
-				newp = spob::vec2(newp1.x, newp1.y);
-			}
+			auto newp = p;
+			if (tree->isTransform)
+				newp = tree->transform * newp;
 			
 			if (tree->check->isInside(newp)) 
-				return isInside(tree->if_true, p);
+				return isInside(tree->if_true, newp);
 			else
-				return isInside(tree->if_false, p);
+				return isInside(tree->if_false, newp);
 		} break;
 	}
 }

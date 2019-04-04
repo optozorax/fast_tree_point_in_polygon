@@ -5,6 +5,7 @@
 #include <twg/image/image_drawing.h>
 #include <twg/image.h>
 
+//-----------------------------------------------------------------------------
 void check_work(const std::vector<spob::vec2>& polygon, ftpip::TreeElem_ptr tree, const std::wstring& name, int size) {
 	using namespace twg;
 	using namespace spob;
@@ -19,7 +20,7 @@ void check_work(const std::vector<spob::vec2>& polygon, ftpip::TreeElem_ptr tree
 	for (int i = 0; i < img.width(); ++i) {
 		for (int j = 0; j < img.height(); ++j) {
 			bool isTrulyInside = isPointInsidePolygon(polygon, brd.to(vec2(i, j)));
-			bool isTreeInside = isInside(tree, brd.to(vec2(i, j)));
+			bool isTreeInside = isInside(tree, glm::vec3(spob2glm(brd.to(vec2(i, j))), 1));
 
 			if (isTrulyInside == isTreeInside) {
 				img[Point_i(i, j)] = getColorBetween(0.5, Green, White);

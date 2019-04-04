@@ -19,7 +19,7 @@ namespace ftpip
 	public:
 		~Check() {}
 
-		virtual bool isInside(const spob::vec2& p) = 0;
+		virtual bool isInside(const glm::vec3& p) = 0;
 
 		virtual double getComplexity(void) const = 0;
 	protected:
@@ -71,7 +71,7 @@ namespace ftpip
 
 		~QuadCheck() {}
 
-		bool isInside(const spob::vec2& p);
+		bool isInside(const glm::vec3& p);
 
 		double getComplexity(void) const;
 	private:
@@ -96,7 +96,7 @@ namespace ftpip
 
 		~HalfQuadCheck() {}
 
-		bool isInside(const spob::vec2& p);
+		bool isInside(const glm::vec3& p);
 
 		double getComplexity(void) const;
 	private:
@@ -137,7 +137,7 @@ namespace ftpip
 
 	double calcComplexity(TreeElem_ptr tree);
 
-	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points);
+	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points, int depth = 10);
 
-	bool isInside(TreeElem_ptr tree, const spob::vec2& p);
+	bool isInside(TreeElem_ptr tree, const glm::vec3& p);
 };
