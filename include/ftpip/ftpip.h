@@ -56,6 +56,12 @@ namespace ftpip
 		};
 	};
 
+	spob::vec2 getUpLeft(const spob::vec2& a, const spob::vec2& b);
+	spob::vec2 getDownRight(const spob::vec2& a, const spob::vec2& b);
+	spob::vec2 getUpLeft(const spob::vec2& a, const spob::vec2& b, const spob::vec2& c);
+	spob::vec2 getDownRight(const spob::vec2& a, const spob::vec2& b, const spob::vec2& c);
+
+
 	/** Четырехугольник, стороны которого параллельны осям координат. */
 	class QuadCheck : public Check
 	{
@@ -92,7 +98,7 @@ namespace ftpip
 		HalfQuadCheck(const spob::vec2& a, 
 		              const spob::vec2& b, 
 		              const spob::vec2& c,
-		              const spob::vec2& last_up_left, spob::vec2& last_down_right);
+		              const spob::vec2& last_up_left, const spob::vec2& last_down_right);
 
 		~HalfQuadCheck() {}
 
@@ -110,18 +116,22 @@ namespace ftpip
 			TRUE, // Любая точка в этом узле принадлежит многоугольнику
 			FALSE, // Аналогично любая не принадлежит
 			NEXT, // Тут решается переход на следующие узлы
+			FINAL, // Данный узел является конечным, и в зависимости от того, что возвратит check_final определяется, принадлежит точка многоугольнику или нет.
 		};
 
 		TreeType type;
 
-		Check_ptr check;
+		Check_ptr check_final;
+
+		Check_ptr check_1;
+		Check_ptr check_2;
 
 		// Преобразования координат, которые применяются к точке, которая будет проходить через этот узел
 		bool isTransform;
 		glm::mat3 transform;
 
-		TreeElem_ptr if_true; // Переход осуществляется на этот узел, если check выдало true
-		TreeElem_ptr if_false; // Аналогично, если check выдало false
+		TreeElem_ptr if_1; // Переход осуществляется на этот узел, если check выдало true
+		TreeElem_ptr if_2; // Аналогично, если check выдало false
 	};
 
 	/*class Tree
@@ -140,4 +150,8 @@ namespace ftpip
 	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points, int depth = 10);
 
 	bool isInside(TreeElem_ptr tree, const glm::vec3& p);
+
+	bool isReachable(TreeElem_ptr tree, TreeElem_ptr current, const glm::vec3& p);
+
+	int calcHeight(TreeElem_ptr tree);
 };
