@@ -1,4 +1,6 @@
+#include <clipper.hpp>
 #include <ftpip/standard.h>
+#include <ftpip/find_borders.h>
 
 namespace ftpip
 {
@@ -182,6 +184,96 @@ bool isPointInsidePolygon(const std::vector<spob::vec2>& polygon1, const spob::v
 	// Odd count --> in the polygon (1)
 	// Even count --> outside (0)
 	return count % 2;
+}
+
+using namespace spob;
+
+//-----------------------------------------------------------------------------
+double calculateArea(const std::vector<vec2>& poly) {
+	if (poly.size() == 0)
+		return 0;
+
+	double sum = 0;
+	for (int i = 0; i < poly.size()-1; ++i)
+		sum += poly[i].x * poly[i+1].y - poly[i+1].x * poly[i].y;
+	sum += poly[poly.size() - 1].x * poly[0].y - poly[0].x * poly[poly.size() - 1].y;
+
+	sum *= 0.5;
+
+	if (sum < 0) sum = -sum;
+
+	return sum;
+}
+
+//-----------------------------------------------------------------------------
+std::vector<std::vector<vec2> > intersectPolygons(const std::vector<vec2>& polygon1, const std::vector<vec2>& polygon2) {
+	std::vector<std::vector<vec2> > result;
+
+	if (polygon1.empty() || polygon2.empty())
+		return result;
+
+	FindBorders brd(10000000, 0);
+	for (auto& i : polygon1)
+		brd.process(i);
+	for (auto& i : polygon2)
+		brd.process(i);
+	brd.finish();
+
+	using namespace ClipperLib;
+	Path subj, clip;
+	Paths solution;
+
+	for (const auto& i : polygon1) {
+		auto p = brd.from(i);
+		subj.push_back(IntPoint(p.x, p.y));
+	}
+	for (const auto& i : polygon2) {
+		auto p = brd.from(i);
+		clip.push_back(IntPoint(p.x, p.y));
+	}
+
+	Clipper c;
+	c.AddPath(subj, ptSubject, true);
+	c.AddPath(clip, ptClip, true);
+	c.Execute(ctIntersection, solution, pftNonZero, pftNonZero);
+	
+	for (auto& i : solution) {
+		result.push_back({});
+		for (auto& j : i)
+			result.back().push_back(brd.to(vec2(j.X, j.Y)));
+	}
+
+	return result;
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class Func>
+void forEachLineInPolygonIndx(const std::vector<T>& mas, const Func& func) {
+	if (mas.size() > 1) {
+		for (int i = 0; i < mas.size() - 1; ++i)
+			func(i, i + 1);
+		func(mas.size() - 1, 0);
+	}
+}
+
+//-----------------------------------------------------------------------------
+template<class T, class Func>
+void forEachLineInPolygonObj(const std::vector<T>& mas, const Func& func) {
+	forEachLineInPolygonIndx(mas, [&] (int i, int j) {
+		func(mas[i], mas[j]);
+	});
+}
+
+//-----------------------------------------------------------------------------
+bool pointOnPolyline(const std::vector<spob::vec2>& poly, spob::vec2 p) {
+	bool returned = false;
+	forEachLineInPolygonObj(poly, [&] (vec2 a, vec2 b) {
+		double t = makeLine2(a, b).to(p);
+		double h = distance(makeLine2(a, b), p);
+		returned |= t >= 0 && t < 1 && h < 0.00001;
+	});
+
+	return returned;
 }
 
 };

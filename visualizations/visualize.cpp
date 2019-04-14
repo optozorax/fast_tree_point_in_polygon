@@ -1,7 +1,7 @@
 #include <ftpip/standard.h>
+#include <ftpip/find_borders.h>
 #include <functional>
 #include "visualize.h"
-#include "find_borders.h"
 
 #include <twg/image/image_drawing.h>
 #include <twg/image.h>
@@ -14,8 +14,8 @@ using namespace spob;
 using namespace ftpip;
 
 //-----------------------------------------------------------------------------
-void check_work(const std::vector<spob::vec2>& polygon, ftpip::TreeElem_ptr tree, const std::wstring& name, int size) {
-	FindBorders brd(size-50, 50);
+void check_work(const std::vector<spob::vec2>& polygon, ftpip::TreeElem_ptr tree, const std::wstring& name, int size, int border) {
+	FindBorders brd(size-2*border, border);
 	brd.process(polygon);
 	brd.finish();
 	ImageDrawing_aa img(brd.getCalculatedSize());
@@ -74,36 +74,27 @@ void drawCurrentTree(ImageDrawing_aa& img, const FindBorders& brd, TreeElem_ptr 
 			glm::vec3 gpos1(spob2glm(brd.to(pos)), 1);
 			glm::vec3 gpos = transform * gpos1;
 			Color clr = White;
-			if (isReachable(tree, current, gpos1)) {
-				if (current->type == TreeElem::TRUE)
+			if (current->type == TreeElem::TRUE)
+				clr = Green;
+			else if (current->type == TreeElem::FALSE)
+				clr = Red;
+			else if (current->type == TreeElem::FINAL) {
+				if (current->check_final->isInside(gpos))
 					clr = Green;
-				else if (current->type == TreeElem::FALSE)
+				else
 					clr = Red;
-				else if (current->type == TreeElem::FINAL) {
-					if (current->check_final->isInside(gpos))
-						clr = Green;
-					else
-						clr = Red;
-				} else {
-					if (current->check_1->isInside(gpos)) {
-						if (current->if_1->type == TreeElem::TRUE)
-							clr = Green;
-						else if (current->if_1->type == TreeElem::FALSE)
-							clr = Red;
-						else
-							clr = Blue;
-					} else if (current->check_2->isInside(gpos)) {
-						if (current->if_2->type == TreeElem::TRUE)
-							clr = Green;
-						else if (current->if_2->type == TreeElem::FALSE)
-							clr = Red;
-						else
-							clr = Miku;
-					} else 
-						clr = Red;
-				}
+			} else {
+				if (current->check_1->isInside(gpos)) {
+					clr = Blue;
+				} else if (current->check_2->isInside(gpos)) {
+					clr = Miku;
+				} else 
+					clr = Red;
 			}
-			img[pos] = getColorBetween(0.5, clr, White);
+			if (isReachable(tree, current, gpos1))
+				img[pos] = getColorBetween(0.5, clr, White);
+			else
+				img[pos] = getColorBetween(0.9, clr, White);
 		}
 	}
 

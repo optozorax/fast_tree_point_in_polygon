@@ -60,7 +60,8 @@ namespace ftpip
 	spob::vec2 getDownRight(const spob::vec2& a, const spob::vec2& b);
 	spob::vec2 getUpLeft(const spob::vec2& a, const spob::vec2& b, const spob::vec2& c);
 	spob::vec2 getDownRight(const spob::vec2& a, const spob::vec2& b, const spob::vec2& c);
-
+	spob::vec2 getUpLeft(const std::vector<spob::vec2>& mas);
+	spob::vec2 getDownRight(const std::vector<spob::vec2>& mas);
 
 	/** Четырехугольник, стороны которого параллельны осям координат. */
 	class QuadCheck : public Check
@@ -147,7 +148,7 @@ namespace ftpip
 
 	double calcComplexity(TreeElem_ptr tree);
 
-	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& points, int depth = 10);
+	void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& original_points, const std::vector<spob::vec2>& points, int depth = 5);
 
 	bool isInside(TreeElem_ptr tree, const glm::vec3& p);
 
