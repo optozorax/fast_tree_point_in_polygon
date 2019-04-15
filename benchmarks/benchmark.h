@@ -13,4 +13,4 @@ struct BenchmarkResult
 	int treeHeight;
 };
 
-std::pair<double, double> calcBenchmark(const std::vector<spob::vec2>& polygon, int size, int& wrongCount, int& treeSize);
+BenchmarkResult calcBenchmark(const std::vector<spob::vec2>& polygon, int size);

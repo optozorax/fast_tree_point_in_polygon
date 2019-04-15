@@ -328,8 +328,8 @@ void makeTree(TreeElem_ptr tree, const std::vector<spob::vec2>& original_points,
 			double area1, area2;
 
 			double getAreaRatio() const {
-				//return fabs(area1-area2);
-				return fabs(poly1.size() - poly2.size())-(!isTransform);
+				return fabs(area1-area2); // Так работает очень хорошо
+				//return fabs(poly1.size() - poly2.size())-(!isTransform); // Так не очень хорошо. Видимо надо для разных примеров разные метрики выбирать
 			}
 
 			bool operator<(const BestPoint& p) {

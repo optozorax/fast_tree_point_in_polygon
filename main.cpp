@@ -11,7 +11,7 @@ void prove_work(const std::vector<spob::vec2>& mas, std::wstring mas_name) {
 
 	TreeElem_ptr tree = std::make_shared<TreeElem>();
 	makeTree(tree, mas, mas, 100);
-	check_work(mas, tree, mas_name, 1000, 7);
+	check_work(mas, tree, mas_name, 200, 7);
 	std::cout << calcHeight(tree) << std::endl;
 	//drawAllTree(mas_name + L"_tree", 50, 5, 5, tree, mas);
 }
@@ -21,33 +21,32 @@ int main() {
 	using namespace std;
 	using namespace spob;
 
-	/*prove_work({{0, 0}, {0, 1}, {1, 1}, {1, 0}}, L"square");
+	vector<vec2> circle;
+	for (int i = 0; i < 50; i++) {
+		circle.push_back(polar2cartesian(vec2(2.0 * i/50.0*_SPOB_PI, 1)));
+		circle.back().x *= 0.3;
+	}
+
+	prove_work({{0, 0}, {0, 1}, {1, 1}, {1, 0}}, L"square");
 	prove_work({{0, 0}, {5, 1}, {4, 6}, {-1, 5}}, L"slanted_square");
 
 	prove_work({{0, 0}, {0, 1}, {2, 1}, {2, 0}}, L"rectangle");
 	prove_work({{0, 0}, {5, 1}, {3, 11}, {-2, 10}}, L"slanted_rectangle");
 
-	prove_work({{0, 0}, {0, 1}, {2, 0}}, L"right_triangle1");
-	prove_work({{0, 0}, {2, 1}, {1, 3}}, L"slanted_right_triangle1");
-	prove_work({{0, 1}, {2, 0}, {0, 0}}, L"right_triangle2");
-	prove_work({{2, 1}, {1, 3}, {0, 0}}, L"slanted_right_triangle2");
-	prove_work({{2, 0}, {0, 0}, {0, 1}}, L"right_triangle3");
-	prove_work({{1, 3}, {0, 0}, {2, 1}}, L"slanted_right_triangle3");*/
+	prove_work({{0, 0}, {0, 1}, {2, 0}}, L"right_triangle");
+	prove_work({{0, 0}, {2, 1}, {1, 3}}, L"slanted_right_triangle");
 
-	//prove_work({{0, 4}, {3, 5}, {5, 7}, {7, 4}, {6, 3}, {4, 0}, {3, 3}}, L"poly2");
+	prove_work({{0, 4}, {3, 5}, {5, 7}, {7, 4}, {6, 3}, {4, 0}, {3, 3}}, L"poly2");
+	prove_work({{0, 1}, {0, 2}, {2, 2}, {2, 3}, {4, 1.5}, {2, 0}, {2, 1}}, L"poly3");
+	prove_work({{0, 1}, {0, 2}, {2, 2}, {2, 3}, {2, 4}, {0, 4}, {0, 5}, {2, 5}, {2, 6}, {4, 3}, {2, 0}, {2, 1}}, L"poly4");
+	prove_work({{0, 0}, {0, 2}, {1, 2}, {2, 4}, {2, 2}, {3, 1}, {5, 3}, {5, 2}, {6, 2}, {7, 1}, {8, 2}, {9, 1}, {9, 0}}, L"poly5");
 
-	vector<vec2> mas;
-	for (int i = 0; i < 500; i++) {
-		mas.push_back(polar2cartesian(vec2(2.0 * i/500.0*_SPOB_PI, 1)));
-		mas.back().x *= 0.3;
-	}
+	prove_work(circle, L"CIRCLE");
 
-	prove_work(mas, L"CIRCLE");
-
-	vector<vec2> poly1 = {{0, 0}, {2, 1}, {0.5, 3}};
-	vector<vec2> poly2 = {{0, 4}, {3, 5}, {5, 7}, {7, 4}, {6, 3}, {4, 0}, {3, 3}};
-	vec2 middle = (poly1[0] + poly1[1])/2.0;
+	vector<vec2> mas = {{0, 4}, {3, 5}, {5, 7}, {7, 4}, {6, 3}, {4, 0}, {3, 3}};
 	TreeElem_ptr tree = std::make_shared<TreeElem>();
+	makeTree(tree, mas, mas, 100);
+	drawAllTree(L"mas_tree", 100, 5, 5, tree, mas);
 
 	//tree->type = TreeElem::TRUE;
 

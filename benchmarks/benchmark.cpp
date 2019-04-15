@@ -8,27 +8,32 @@ using namespace spob;
 using namespace ftpip;
 
 //-----------------------------------------------------------------------------
-std::pair<double, double> calcBenchmark(const std::vector<vec2>& polygon, int size, int& wrongCount, int& treeSize) {
+BenchmarkResult calcBenchmark(const std::vector<vec2>& polygon, int size) {
+	BenchmarkResult result;
+
 	FindBorders brd(size, 0);
 	brd.process(polygon);
 	brd.finish();
 	auto sz = brd.getCalculatedSize();
 
+	auto start = std::chrono::high_resolution_clock::now();
 	TreeElem_ptr tree = std::make_shared<TreeElem>();
 	makeTree(tree, polygon, polygon, 100);
+	auto end = std::chrono::high_resolution_clock::now();
+	result.time_treeCreate = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
-	treeSize = calcHeight(tree);
+	result.treeHeight = calcHeight(tree);
 
 	//-------------------------------------------------------------------------
-	auto start = std::chrono::high_resolution_clock::now();
+	start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < sz.x; ++i) {
 		for (int j = 0; j < sz.y; ++j) {
 			auto pos = glm::vec3(spob2glm(brd.to(vec2(i, j))), 1);
 			bool isTreeInside = isInside(tree, pos);
 		}
 	}
-	auto end = std::chrono::high_resolution_clock::now();
-	double time1 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	end = std::chrono::high_resolution_clock::now();
+	result.time_my = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
 	//-------------------------------------------------------------------------
 	start = std::chrono::high_resolution_clock::now();
@@ -39,10 +44,10 @@ std::pair<double, double> calcBenchmark(const std::vector<vec2>& polygon, int si
 		}
 	}
 	end = std::chrono::high_resolution_clock::now();
-	double time2 = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+	result.time_standard = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
 
 	//-------------------------------------------------------------------------
-	wrongCount = 0;
+	result.wrongPixels = 0;
 	for (int i = 0; i < sz.x; ++i) {
 		for (int j = 0; j < sz.y; ++j) {
 			auto pos = brd.to(vec2(i, j));
@@ -51,9 +56,9 @@ std::pair<double, double> calcBenchmark(const std::vector<vec2>& polygon, int si
 			bool isTrulyInside = isPointInsidePolygon(polygon, pos);
 			bool isOnPolyLine = pointOnPolyline(polygon, pos);
 			if (isTreeInside != isTrulyInside && !isOnPolyLine)
-				wrongCount++;
+				result.wrongPixels++;
 		}
 	}
 
-	return {time1, time2};
+	return result;
 }
