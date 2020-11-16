@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Неудачная попытка написать алгоритм проверки принадлежности точки прямоугольнику"
-tags: [программирование, графика]
+tags: [программирование, графика, рейтрейсинг]
 permalink: fast_tree_point_in_polygon
 description: "Рассказываю что хотел сделать и что получилось. Ничего особого полезного, зато красивые картинки."
 image: submodules/fast_tree_point_in_polygon/img/mas_tree1.png
